@@ -24,6 +24,14 @@
     <!-- Favicon -->
 </head>
 <body>
+
+    <?php
+    if (isset($_GET['Email_found']) && $_GET['Email_found'] == 0) {
+        echo '<div class="container mt-3">
+        <div class="alert alert-danger">Not any Account on This Email
+    </div></div>';
+    }
+    ?>
      <div id="app">
         <section class="section">
             <div class="container-xl">
@@ -37,7 +45,7 @@
         </div>
       
       <div class="card-body">
-                  <form method="POST" action="#" class="needs-validation">
+                  <form method="POST" action="../../API/validEmail.php" class="needs-validation">
             <input type="hidden" name="_token" value="Iy0FRDBOIkaUKE25aJqtOAIIZbsRA1D2wpZGbg4r">                <div class="form-group">
                     <label for="email">Email</label>
                     <input id="email" type="email" class="form-control  " name="email" tabindex="1" required>

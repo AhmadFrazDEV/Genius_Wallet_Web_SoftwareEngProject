@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Mirrored from product.geniusocean.com/genius-wallet/merchant/login by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 25 Nov 2023 16:00:24 GMT -->
+<!-- Mirrored from product.geniusocean.com/genius-wallet/merchant/forgot-password by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 25 Nov 2023 16:01:04 GMT -->
 <!-- Added by HTTrack -->
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
 
@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genius Admin</title>
+    <title>Genius Admin- Merchant Forgot Password</title>
     <link rel="shortcut icon" type="image/png" href="../assets/images/5480339181644482400.png">
 
     <link rel="stylesheet" href="../assets/merchant/css/bootstrap.min.css">
@@ -27,35 +27,6 @@
 </head>
 
 <body>
-    <?php
-// Check if the registration was successful
-if (isset($_GET['registration_success']) && $_GET['registration_success'] == 1) {
-    echo '<div class="container mt-3">
-    <div class="alert alert-success">Successfully registered! Please login with your new credentials.
-</div></div>';
-}
- // Check log in error
-if (isset($_GET['login_error']) && $_GET['login_error'] == 0) {
-    echo '<div class="container mt-3">
-    <div class="alert alert-danger">User Not Found
-</div></div>';
-}
-// check incorrect password
-if (isset($_GET['incorrect_pass']) && $_GET['incorrect_pass'] == 0) {
-    echo '<div class="container mt-3">
-    <div class="alert alert-danger">Incorrect Password
-</div></div>';
-}
-
-// Password Updtae
-if (isset($_GET['pass_update']) && $_GET['pass_update'] == 1) {
-    echo '<div class="container mt-3">
-    <div class="alert alert-success">Your Password Has Been Update. You can Login Now
-</div></div>';
-}
-?>
-    <!-- Your existing login page content -->
-
     <div id="app">
         <section class="section">
             <div class="container-xl">
@@ -65,39 +36,25 @@ if (isset($_GET['pass_update']) && $_GET['pass_update'] == 1) {
                         class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
                         <div class="card card-primary logincard">
                             <div class="card-header d-flex justify-content-between">
-                                <h4>User Login</h4>
-                                <a href="../../index.html">Home</a>
+                                <h4>Reset Password</h4>
+                                <a href="https://product.geniusocean.com/genius-wallet">Home</a>
                             </div>
 
                             <div class="card-body">
-                                <form method="POST" action="../../API/Login_API.php" class="needs-validation">
+                            <form method="POST" action="../../API/Reset_Password.php?email=<?php echo urlencode($_GET['email']); ?>" class="needs-validation">
+                                    <p><?php echo $_GET['email'] ?></p>
                                     <input type="hidden" name="_token" value="Iy0FRDBOIkaUKE25aJqtOAIIZbsRA1D2wpZGbg4r">
                                     <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input id="email" type="email" class="form-control  " name="email" tabindex="1"
-                                            value="merchant@gmail.com" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="password" class="control-label">Password</label>
-                                        <input id="password" type="password" class="form-control  " value="1234"
+                                        <label for="password" class="control-label">New Password</label>
+                                        <input id="password" type="password" class="form-control  " value=""
                                             name="password" tabindex="2">
 
                                     </div>
 
-
-
                                     <div class="form-group text-right">
-                                        <a href="forgot-password.php" class="float-left mt-3">
-                                            Forgot Password?
-                                        </a>
                                         <button type="submit" class="btn btn-primary btn-lg btn-icon icon-right"
                                             tabindex="4">
-                                            Login </button>
-                                    </div>
-                                    <div class="form-group text-center">
-                                        <a href="../Registration/forms/register.php" class="float-left mt-3">
-                                            Don't have an account? </a>
+                                            Submit </button>
                                     </div>
                                 </form>
                             </div>
@@ -144,20 +101,6 @@ if (isset($_GET['pass_update']) && $_GET['pass_update'] == 1) {
         } else {
             return amount.toFixed();
         }
-    }
-    </script>
-    <script src="../../../www.google.com/recaptcha/api.js"></script>
-    <script>
-    'use strict';
-
-    function recaptcha() {
-        var response = grecaptcha.getResponse();
-        if (response.length == 0) {
-            document.getElementById('g-recaptcha-error').innerHTML =
-                '<span class="text-danger">Captcha field is required.</span>';
-            return false;
-        }
-        return true;
     }
     </script>
     <div class="cookie-section">
@@ -226,6 +169,6 @@ if (isset($_GET['pass_update']) && $_GET['pass_update'] == 1) {
 
 </body>
 
-<!-- Mirrored from product.geniusocean.com/genius-wallet/merchant/login by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 25 Nov 2023 16:00:32 GMT -->
+<!-- Mirrored from product.geniusocean.com/genius-wallet/merchant/forgot-password by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 25 Nov 2023 16:01:04 GMT -->
 
 </html>
