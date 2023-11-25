@@ -1,5 +1,5 @@
 <?php 
-
+include('./database_integration.php');
 session_start();
 $userData =  $_SESSION['user'];
 // echo $userData['user_id'] .' '. $userData['username'];
@@ -8,7 +8,35 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
     header("Location: ./index.html");
     exit();
 }
-?>
+
+// {Functions}
+// Get the balance
+
+                        // Assuming $userData['user_id'] holds the user's ID
+                        $userId = $userData['user_id'];
+
+                        // Fetch balance from the wallets table for the given user ID
+                        $balanceQuery = "SELECT * FROM wallets WHERE user_id = '$userId'";
+                        $balanceResult = mysqli_query($conn, $balanceQuery);
+
+                        // Check if the query was successful
+                        if ($balanceResult) {
+                            $row = mysqli_fetch_assoc($balanceResult);
+                        
+                            // Check if the user has a balance record
+                            if ($row) {
+                                $balance = $row['balance'];
+                                $currency = $row['currency'];
+                                
+                            } else {
+                                echo "<h1>No balance record found for the user</h1>";
+                            }
+                        } else {
+                            echo "<h1>Error fetching balance</h1>";
+                        }
+ ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -80,18 +108,19 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                         </li>
 
                         <li class="nav-item ">
-                            <a href="./merchant/generate-qrcode" class="nav-link"><i class="fas fa-plus"></i> <span>
+                            <a href="./user_functions/addBalance.html" class="nav-link"><i class="fas fa-plus"></i>
+                                <span>
                                     Add Balance</span></a>
                         </li>
 
-                        
+
 
                         <li class="nav-item ">
                             <a href="./merchant/transactions" class="nav-link"><i
                                     class="fas fa-exchange-alt"></i><span>Transactions</span></a>
                         </li>
 
-                        
+
                         <li class="menu-header">Setting</li>
                         <li class="nav-item ">
                             <a href="./merchant/profile-setting" class="nav-link"><i
@@ -127,12 +156,15 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                             <span style="color: #0da8ee ; text-transform: uppercase;">
                                 <?php echo $userData['username']; ?>
                             </span>
-                            
+
                         </h1>
-                        
+
                     </div>
                     <button type="button" class="btn btn-info  float-right">Send Money</button>
                 </section>
+                <div style="margin-top: 20px; text-align: center;">
+                    <h1><?php echo $balance .' '. $currency; ?></h1>
+                </div>
 
                 <div class="row">
                     <div class="col-md-12 mb-3">
@@ -141,7 +173,7 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                     <div class="col-xl-3 col-md-6 currency--card">
                         <div class="card card-statistic-1">
                             <div class="card-icon bg-primary text-white">
-                                US                            </div>
+                                US </div>
                             <div class="card-wrap">
                                 <div class="card-header">
                                     <h4>United State Dollar</h4>
@@ -162,7 +194,7 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                                     <h4>Pakistani Currency</h4>
                                 </div>
                                 <div class="card-body">
-                                    3,534,939.08 PKR
+                                <?php echo $balance  ?> PKR
                                 </div>
                             </div>
                         </div>
@@ -260,26 +292,30 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                 </div>
 
                 <div class="row row-deck row-cards">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Recent Transactions</h4>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table card-table table-vcenter text-nowrap datatable">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Transaction ID</th>
-                                            <th>Description</th>
-                                            <th>Remark</th>
-                                            <th>Amount</th>
-                                            <th>Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        <tr>
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <!-- <h4>Recent Transactions</h4> -->
+                <!-- Button to toggle the transactions table -->
+                <button class="btn btn-primary btn-sm float-right" data-toggle="collapse" href="#transactionsTable"><i class="fas fa-chevron-down ml-2"></i>All Transections</button>
+            </div>
+            <div class="table-responsive collapse" id="transactionsTable">
+                <table class="table card-table table-vcenter text-nowrap datatable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Transaction ID</th>
+                            <th>Description</th>
+                            <th>Remark</th>
+                            <th>Amount</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Add your transactions here -->
+                        <tr>
+                            <!-- Transaction data -->
+                            <tr>
                                             <td data-label="Date">02-Mar-2022</td>
                                             <td data-label="Transaction ID">EVZG0GKK1NLD</td>
                                             <td data-label="Description">
@@ -296,123 +332,21 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                                                     data-data="{&quot;id&quot;:4,&quot;trnx&quot;:&quot;EVZG0GKK1NLD&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;1&quot;,&quot;wallet_id&quot;:&quot;32&quot;,&quot;charge&quot;:&quot;12.5000000000&quot;,&quot;amount&quot;:&quot;37.5000000000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-02T16:15:18.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-02T16:15:18.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:1,&quot;default&quot;:&quot;1&quot;,&quot;symbol&quot;:&quot;$&quot;,&quot;code&quot;:&quot;USD&quot;,&quot;curr_name&quot;:&quot;United State Dollar&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;1.0000000000&quot;,&quot;created_at&quot;:&quot;2021-12-19T21:12:58.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-06-25T23:38:18.000000Z&quot;}}">Details</button>
                                             </td>
                                         </tr>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                        <tr>
-                                            <td data-label="Date">15-Mar-2022</td>
-                                            <td data-label="Transaction ID">ERGWQBWNUI62</td>
-                                            <td data-label="Description">
-                                                Payment received from : demouser@gmail.com
-                                            </td>
-                                            <td data-label="Remark">
-                                                <span class="badge badge-dark">Merchant Payment</span>
-                                            </td>
-                                            <td data-label="Amount">
-                                                <span class="text-success">+ 32.89 EUR</span>
-                                            </td>
-                                            <td data-label="Details" class="text-end">
-                                                <button class="btn btn-primary btn-sm details"
-                                                    data-data="{&quot;id&quot;:102,&quot;trnx&quot;:&quot;ERGWQBWNUI62&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;4&quot;,&quot;wallet_id&quot;:&quot;42&quot;,&quot;charge&quot;:&quot;2.1080700000&quot;,&quot;amount&quot;:&quot;32.8919300000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-15T15:03:20.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-15T15:03:20.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:4,&quot;default&quot;:&quot;0&quot;,&quot;symbol&quot;:&quot;\u20ac&quot;,&quot;code&quot;:&quot;EUR&quot;,&quot;curr_name&quot;:&quot;European Currency&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;0.9439350000&quot;,&quot;created_at&quot;:&quot;2021-12-19T21:12:58.000000Z&quot;,&quot;updated_at&quot;:&quot;2023-10-31T05:01:46.000000Z&quot;}}">Details</button>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td data-label="Date">15-Mar-2022</td>
-                                            <td data-label="Transaction ID">ABHOAS4YPECF</td>
-                                            <td data-label="Description">
-                                                Payment received from : demouser@gmail.com
-                                            </td>
-                                            <td data-label="Remark">
-                                                <span class="badge badge-dark">Merchant Payment</span>
-                                            </td>
-                                            <td data-label="Amount">
-                                                <span class="text-success">+ 4,778.15 BDT</span>
-                                            </td>
-                                            <td data-label="Details" class="text-end">
-                                                <button class="btn btn-primary btn-sm details"
-                                                    data-data="{&quot;id&quot;:104,&quot;trnx&quot;:&quot;ABHOAS4YPECF&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;6&quot;,&quot;wallet_id&quot;:&quot;41&quot;,&quot;charge&quot;:&quot;221.8523800000&quot;,&quot;amount&quot;:&quot;4778.1476200000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-15T15:49:57.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-15T15:49:57.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:6,&quot;default&quot;:&quot;0&quot;,&quot;symbol&quot;:&quot;\u09f3&quot;,&quot;code&quot;:&quot;BDT&quot;,&quot;curr_name&quot;:&quot;Bangladeshi Taka&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;110.0010370000&quot;,&quot;created_at&quot;:&quot;2021-12-20T17:48:53.000000Z&quot;,&quot;updated_at&quot;:&quot;2023-10-31T05:01:46.000000Z&quot;}}">Details</button>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td data-label="Date">15-Mar-2022</td>
-                                            <td data-label="Transaction ID">QKZQBJD19GXS</td>
-                                            <td data-label="Description">
-                                                Payment received from : demouser@gmail.com
-                                            </td>
-                                            <td data-label="Remark">
-                                                <span class="badge badge-dark">Merchant Payment</span>
-                                            </td>
-                                            <td data-label="Amount">
-                                                <span class="text-success">+ 38.59 USD</span>
-                                            </td>
-                                            <td data-label="Details" class="text-end">
-                                                <button class="btn btn-primary btn-sm details"
-                                                    data-data="{&quot;id&quot;:112,&quot;trnx&quot;:&quot;QKZQBJD19GXS&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;1&quot;,&quot;wallet_id&quot;:&quot;32&quot;,&quot;charge&quot;:&quot;2.4100000000&quot;,&quot;amount&quot;:&quot;38.5900000000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-15T18:14:47.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-15T18:14:47.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:1,&quot;default&quot;:&quot;1&quot;,&quot;symbol&quot;:&quot;$&quot;,&quot;code&quot;:&quot;USD&quot;,&quot;curr_name&quot;:&quot;United State Dollar&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;1.0000000000&quot;,&quot;created_at&quot;:&quot;2021-12-19T21:12:58.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-06-25T23:38:18.000000Z&quot;}}">Details</button>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td data-label="Date">15-Mar-2022</td>
-                                            <td data-label="Transaction ID">L47RRYNXDQTW</td>
-                                            <td data-label="Description">
-                                                Payment received from : demouser@gmail.com
-                                            </td>
-                                            <td data-label="Remark">
-                                                <span class="badge badge-dark">Merchant Payment</span>
-                                            </td>
-                                            <td data-label="Amount">
-                                                <span class="text-success">+ 10,718.15 BDT</span>
-                                            </td>
-                                            <td data-label="Details" class="text-end">
-                                                <button class="btn btn-primary btn-sm details"
-                                                    data-data="{&quot;id&quot;:114,&quot;trnx&quot;:&quot;L47RRYNXDQTW&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;6&quot;,&quot;wallet_id&quot;:&quot;41&quot;,&quot;charge&quot;:&quot;281.8523800000&quot;,&quot;amount&quot;:&quot;10718.1476200000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-15T18:15:09.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-15T18:15:09.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:6,&quot;default&quot;:&quot;0&quot;,&quot;symbol&quot;:&quot;\u09f3&quot;,&quot;code&quot;:&quot;BDT&quot;,&quot;curr_name&quot;:&quot;Bangladeshi Taka&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;110.0010370000&quot;,&quot;created_at&quot;:&quot;2021-12-20T17:48:53.000000Z&quot;,&quot;updated_at&quot;:&quot;2023-10-31T05:01:46.000000Z&quot;}}">Details</button>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td data-label="Date">19-Mar-2022</td>
-                                            <td data-label="Transaction ID">SZXHPKFMGNO9</td>
-                                            <td data-label="Description">
-                                                Payment received from : demouser@gmail.com
-                                            </td>
-                                            <td data-label="Remark">
-                                                <span class="badge badge-dark">Merchant Payment</span>
-                                            </td>
-                                            <td data-label="Amount">
-                                                <span class="text-success">+ 1.00 USD</span>
-                                            </td>
-                                            <td data-label="Details" class="text-end">
-                                                <button class="btn btn-primary btn-sm details"
-                                                    data-data="{&quot;id&quot;:154,&quot;trnx&quot;:&quot;SZXHPKFMGNO9&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;1&quot;,&quot;wallet_id&quot;:&quot;32&quot;,&quot;charge&quot;:&quot;0.0000000000&quot;,&quot;amount&quot;:&quot;1.0000000000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-19T09:34:29.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-19T09:34:29.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:1,&quot;default&quot;:&quot;1&quot;,&quot;symbol&quot;:&quot;$&quot;,&quot;code&quot;:&quot;USD&quot;,&quot;curr_name&quot;:&quot;United State Dollar&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;1.0000000000&quot;,&quot;created_at&quot;:&quot;2021-12-19T21:12:58.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-06-25T23:38:18.000000Z&quot;}}">Details</button>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td data-label="Date">20-Mar-2022</td>
-                                            <td data-label="Transaction ID">NKCKVBAF7Y7S</td>
-                                            <td data-label="Description">
-                                                Payment received from : demouser@gmail.com
-                                            </td>
-                                            <td data-label="Remark">
-                                                <span class="badge badge-dark">Merchant Payment</span>
-                                            </td>
-                                            <td data-label="Amount">
-                                                <span class="text-success">+ 10.00 BDT</span>
-                                            </td>
-                                            <td data-label="Details" class="text-end">
-                                                <button class="btn btn-primary btn-sm details"
-                                                    data-data="{&quot;id&quot;:160,&quot;trnx&quot;:&quot;NKCKVBAF7Y7S&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;6&quot;,&quot;wallet_id&quot;:&quot;41&quot;,&quot;charge&quot;:&quot;0.0000000000&quot;,&quot;amount&quot;:&quot;10.0000000000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-20T20:33:37.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-20T20:33:37.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:6,&quot;default&quot;:&quot;0&quot;,&quot;symbol&quot;:&quot;\u09f3&quot;,&quot;code&quot;:&quot;BDT&quot;,&quot;curr_name&quot;:&quot;Bangladeshi Taka&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;110.0010370000&quot;,&quot;created_at&quot;:&quot;2021-12-20T17:48:53.000000Z&quot;,&quot;updated_at&quot;:&quot;2023-10-31T05:01:46.000000Z&quot;}}">Details</button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- Include Bootstrap and jQuery scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
-                <div class="row row-deck row-cards">
+
+                <!-- <div class="row row-deck row-cards">
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
@@ -517,7 +451,7 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="modal modal-blur fade" id="modal-team" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
