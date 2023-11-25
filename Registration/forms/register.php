@@ -1,5 +1,5 @@
 <?php
-  // include('../../API/getCountries.php');
+  include('../../API/getCountries.php');
 ?>
 
 
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="card-body">
-                  <form method="POST" action="#" class="needs-validation">
+                  <form method="POST" action="../../API/Registration.php" class="needs-validation">
                     <input
                       type="hidden"
                       name="_token"
