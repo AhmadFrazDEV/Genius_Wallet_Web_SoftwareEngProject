@@ -1,6 +1,6 @@
 <?php
 include('../database_integration.php');
-
+session_start();
 // Assuming you have a database connection established
 
 // Check if the form is submitted
@@ -20,6 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $row['password'])) {
             // Password is correct, user is authenticated
             // Redirect to User_Account page
+
+            $userData = array(
+                'user_id' => $row['user_id'],
+                'username' => $row['username'],
+                'email' => $row['email'],
+                // Add more user data as needed
+            );
+            
+            // Store the user data in the session
+            $_SESSION['user'] = $userData;
+
             header("Location: ../Wallet.php");
             exit();
         } else {
