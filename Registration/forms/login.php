@@ -96,7 +96,7 @@ if (isset($_GET['pass_update']) && $_GET['pass_update'] == 1) {
                                             Login </button>
                                     </div>
                                     <div class="form-group text-center">
-                                        <a href="../Registration/forms/register.php" class="float-left mt-3">
+                                        <a href="../forms/register.php" class="float-left mt-3">
                                             Don't have an account? </a>
                                     </div>
                                 </form>

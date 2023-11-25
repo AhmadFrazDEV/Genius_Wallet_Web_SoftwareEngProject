@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $row['password'])) {
             // Password is correct, user is authenticated
             // Redirect to User_Account page
-            header("Location: User_Account.php");
+            header("Location: ../Wallet.php");
             exit();
         } else {
             header("Location: ../Registration/forms/login.php?incorrect_pass=0");
