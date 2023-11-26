@@ -4,7 +4,6 @@ include('../database_integration.php');
 session_start();
 $userData =  $_SESSION['user'];
 
-
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate and sanitize input data
@@ -13,25 +12,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Additional validation if needed
 
-    
+    // Check if the user already exists in the wallets table
+    $checkUserSql = "SELECT * FROM wallets WHERE user_id = ?";
+    $checkUserStmt = $conn->prepare($checkUserSql);
+    $checkUserStmt->bind_param("i", $userData['user_id']);
+    $checkUserStmt->execute();
+    $result = $checkUserStmt->get_result();
 
-    // Prepare and execute the SQL query to insert data into the wallets table
-    $sql = "INSERT INTO wallets (user_id, balance, currency) VALUES ('" . $userData['user_id'] . "', '$amount', '$currency')";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ids", $user_id, $amount, $currency);
-
-    // Assuming $user_id is the user's ID, replace it with the actual user ID value
-    $user_id = 1; // Replace with your actual user ID
-
-    if ($stmt->execute()) {
-        header("Location: ../Wallet.php");
-        exit();
+    if ($result->num_rows > 0) {
+        // User exists, update their balance
+        $updateSql = "UPDATE wallets SET balance = balance + $amount WHERE user_id = {$userData['user_id']}";
+        $updateStmt = $conn->prepare($updateSql);
+        $updateStmt->bind_param("di", $amount, $userData['user_id']);
+        if ($updateStmt->execute()) {
+            header("Location: ../Wallet.php");
+            exit();
+        } else {
+            echo "Error updating balance: " . $updateStmt->error;
+        }
+        $updateStmt->close();
     } else {
-        echo "Error: " . $stmt->error;
+        // User doesn't exist, insert a new row
+        $insertSql = "INSERT INTO wallets (user_id, balance, currency) VALUES ('{$userData['user_id']}', '$amount', '$currency')";
+        $insertStmt = $conn->prepare($insertSql);
+        $insertStmt->bind_param("ids", $userData['user_id'], $amount, $currency);
+        if ($insertStmt->execute()) {
+            header("Location: ../Wallet.php");
+            exit();
+        } else {
+            echo "Error inserting data: " . $insertStmt->error;
+        }
+        $insertStmt->close();
     }
 
     // Close the statement and connection
-    $stmt->close();
+    $checkUserStmt->close();
     $conn->close();
 }
 ?>
