@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Additional validation if needed
 
     // Check if the user already exists in the wallets table
-    $checkUserSql = "SELECT * FROM wallets WHERE user_id = ?";
+    $checkUserSql = "SELECT * FROM wallets WHERE user_id = '{$userData['user_id']}'";
     $checkUserStmt = $conn->prepare($checkUserSql);
     $checkUserStmt->bind_param("i", $userData['user_id']);
     $checkUserStmt->execute();

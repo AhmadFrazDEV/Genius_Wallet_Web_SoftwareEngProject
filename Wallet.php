@@ -11,7 +11,8 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
 
 // {Functions}
 // Get the balance
-
+$balance = 0.0;
+$currency = 'pak';
                         // Assuming $userData['user_id'] holds the user's ID
                         $userId = $userData['user_id'];
 
@@ -25,14 +26,14 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                         
                             // Check if the user has a balance record
                             if ($row) {
-                                $balance = $row['balance'];
-                                $currency = $row['currency'];
+                                $balance = $row['balance'] ?? 0.0;
+                                $currency = $row['currency'] ?? '';
                                 
                             } else {
-                                echo "<h1>No balance record found for the user</h1>";
+                                // echo "<h1>No balance record found for the user</h1>";
                             }
                         } else {
-                            echo "<h1>Error fetching balance</h1>";
+                            // echo "<h1>Error fetching balance</h1>";
                         }
  ?>
 
@@ -160,7 +161,7 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
                         </h1>
 
                     </div>
-                    <button type="button" class="btn btn-info  float-right">Send Money</button>
+                    <a href="./user_functions/sendMoney.php"><button type="button" class="btn btn-info  float-right">Send Money</button></a>
                 </section>
                 <div style="margin-top: 20px; text-align: center;">
                     <h1><?php echo $balance .' '. $currency; ?></h1>
