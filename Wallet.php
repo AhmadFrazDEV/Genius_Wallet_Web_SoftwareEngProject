@@ -305,42 +305,61 @@ $currency = 'pak';
                 <button class="btn btn-primary btn-sm float-right" data-toggle="collapse" href="#transactionsTable"><i class="fas fa-chevron-down ml-2"></i>All Transections</button>
             </div>
             <div class="table-responsive collapse" id="transactionsTable">
-                <table class="table card-table table-vcenter text-nowrap datatable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Transaction ID</th>
-                            <th>Description</th>
-                            <th>Remark</th>
-                            <th>Amount</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Add your transactions here -->
-                        <tr>
-                            <!-- Transaction data -->
-                            <tr>
-                                            <td data-label="Date">02-Mar-2022</td>
-                                            <td data-label="Transaction ID">EVZG0GKK1NLD</td>
-                                            <td data-label="Description">
-                                                Payment received from : demouser@gmail.com
-                                            </td>
-                                            <td data-label="Remark">
-                                                <span class="badge badge-dark">Merchant Payment</span>
-                                            </td>
-                                            <td data-label="Amount">
-                                                <span class="text-success">+ 37.50 USD</span>
-                                            </td>
-                                            <td data-label="Details" class="text-end">
-                                                <button class="btn btn-primary btn-sm details"
-                                                    data-data="{&quot;id&quot;:4,&quot;trnx&quot;:&quot;EVZG0GKK1NLD&quot;,&quot;user_id&quot;:&quot;15&quot;,&quot;user_type&quot;:&quot;2&quot;,&quot;currency_id&quot;:&quot;1&quot;,&quot;wallet_id&quot;:&quot;32&quot;,&quot;charge&quot;:&quot;12.5000000000&quot;,&quot;amount&quot;:&quot;37.5000000000&quot;,&quot;remark&quot;:&quot;merchant_payment&quot;,&quot;type&quot;:&quot;+&quot;,&quot;details&quot;:&quot;Payment received from : demouser@gmail.com&quot;,&quot;invoice_num&quot;:null,&quot;created_at&quot;:&quot;2022-03-02T16:15:18.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-03-02T16:15:18.000000Z&quot;,&quot;currency&quot;:{&quot;id&quot;:1,&quot;default&quot;:&quot;1&quot;,&quot;symbol&quot;:&quot;$&quot;,&quot;code&quot;:&quot;USD&quot;,&quot;curr_name&quot;:&quot;United State Dollar&quot;,&quot;type&quot;:&quot;1&quot;,&quot;status&quot;:&quot;1&quot;,&quot;rate&quot;:&quot;1.0000000000&quot;,&quot;created_at&quot;:&quot;2021-12-19T21:12:58.000000Z&quot;,&quot;updated_at&quot;:&quot;2022-06-25T23:38:18.000000Z&quot;}}">Details</button>
-                                            </td>
-                                        </tr>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <table class="table card-table table-vcenter text-nowrap datatable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Transaction ID</th>
+                <th>Transection</th>
+                <th>Remark</th>
+                <th>Amount</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $transferQuery = "SELECT * FROM transfers";
+                $result = mysqli_query($conn, $transferQuery);
+                
+                $getSenderwalletId = "SELECT * FROM wallets WHERE user_id = {$userData['user_id']}";
+                $senderWallet = mysqli_query($conn, $getSenderwalletId);
+                if (mysqli_num_rows($senderWallet) > 0){
+                    $senderRow = mysqli_fetch_assoc($senderWallet);
+                }
+                if ($result) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        // Determine if the logged-in user is the sender or receiver
+                        $isSender = $row['sender_wallet_id'] == $senderRow['wallet_id'];
+                        
+                        // Set the Transection column based on sender or receiver
+                        $transectionColumn = $isSender ? "Sent to: " . $row['receiver_wallet_id'] : "Received from: " . $row['sender_wallet_id'];
+
+                        // Set the Amount column color based on sender or receiver
+                        $amountColor = $isSender ? "text-danger" : "text-success";
+
+                        echo '<tr>
+                            <td data-label="Date">' . $row['created_at'] . '</td>
+                            <td data-label="Transaction ID">' . $row['transfer_id'] . '</td>
+                            <td data-label="Transection">' . $transectionColumn . '</td>
+                            <td data-label="Remark">
+                                <span class="badge badge-dark">' . $row['status'] . '</span>
+                            </td>
+                            <td data-label="Amount">
+                                <span class="' . $amountColor . '">$' . $row['amount'] . '</span>
+                            </td>
+                            <td data-label="Details" class="text-end">
+                                <button class="btn btn-primary btn-sm details" 
+                                    data-data="' . htmlspecialchars(json_encode($row)) . '">Details
+                                </button>
+                            </td>
+                        </tr>';
+                    }
+                }
+            ?>
+        </tbody>
+    </table>
+</div>
+
         </div>
     </div>
 </div>
