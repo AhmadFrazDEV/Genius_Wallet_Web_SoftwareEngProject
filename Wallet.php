@@ -10,11 +10,7 @@ if(!isset($userData['user_id']) && !isset($userData['username']) && !isset($user
 }
 
 // Transfer Checking
-if (isset($_GET['transferStatus']) && $_GET['transferStatus'] == 1) {
-    echo '<div class="container mt-3">
-    <div class="alert alert-success">Money Has Been Transfer 
-</div></div>';
-}
+
 
 
 // {Functions}

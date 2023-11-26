@@ -1,3 +1,19 @@
+<?php
+// Check email recipient is present in database
+if (isset($_GET['emailNotFound']) && $_GET['emailNotFound'] == 0) {
+    echo '<div class="container mt-3">
+    <div class="alert alert-danger">Recipient Email Not Found
+</div></div>';
+}
+
+// Checking less balance
+if (isset($_GET['lessBalance']) && $_GET['lessBalance'] == 0) {
+    echo '<div class="container mt-3">
+    <div class="alert alert-danger">Insufficient Balance
+</div></div>';
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 

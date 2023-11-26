@@ -19,14 +19,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Recipient's email exists, proceed with the transfer
 
             // Get the sender's wallet ID
-            $getSenderWalletQuery = "SELECT wallet_id FROM wallets WHERE user_id = {$userData['user_id']}";
+            $getSenderWalletQuery = "SELECT * FROM wallets WHERE user_id = {$userData['user_id']}";
             $resultGetSenderWallet = mysqli_query($conn, $getSenderWalletQuery);
-
+            
             if ($resultGetSenderWallet) {
                 if (mysqli_num_rows($resultGetSenderWallet) > 0) {
                     $row = mysqli_fetch_assoc($resultGetSenderWallet);
                     $senderWalletId = $row['wallet_id'];
-
+                    if($row['balance'] < $amount)
+                    {
+                        header("Location: ../user_functions/sendMoney.php?lessBalance=0");
+                        exit();
+                    }
                     // Get the recipient's wallet ID
                     $getRecipientWalletQuery = "SELECT wallet_id FROM wallets WHERE user_id IN (SELECT user_id FROM users WHERE email = '$recipientEmail')";
                     $resultGetRecipientWallet = mysqli_query($conn, $getRecipientWalletQuery);
@@ -73,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error executing getSenderWalletQuery: " . mysqli_error($conn);
             }
         } else {
-            echo "Recipient's email not found in users table.";
+            header("Location: ../user_functions/sendMoney.php?emailNotFound=0");
         }
     } else {
         echo "Error executing checkRecipientQuery: " . mysqli_error($conn);
