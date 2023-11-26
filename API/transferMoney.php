@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     $resultInsertTransfer = mysqli_query($conn, $insertTransferQuery);
 
                                     if ($resultInsertTransfer) {
-                                        echo "Transfer successful!";
+                                        header("Location: ../user_functions/proofofTransfer.php?amount=" . urlencode($amount) . "&sender=" . urlencode($userData['email']) . "&receiver=" . urlencode($recipientEmail));
                                     } else {
                                         echo "Error inserting into transfers table: " . mysqli_error($conn);
                                     }
